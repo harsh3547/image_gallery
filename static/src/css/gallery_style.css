@@ -1,0 +1,23 @@
+.pswp__bottom{
+	overflow: auto;
+	overflow-y: hidden;
+	white-space: nowrap;
+	height: 134px;
+	position:absolute;
+	bottom : 15px;
+}
+.pswp__thumbnail_list {
+	text-align : center;
+	border-top: 2px black  solid;
+	/*background-color: rgb(194,138,179);*/
+}
+.pswp__thumbnail_list li img{
+	width : 128px;
+	height : 128px;
+}
+.pswp__thumbnail_list li{
+	list-style: none;
+	display: inline-block;
+	margin: 5px !important;
+
+}

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <template id="assets_backend" name="gallery assets" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+               <link rel="stylesheet" href="/image_gallery/static/src/css/gallery_style.css"/>
+            	 <!-- Core CSS file -->
+		<link rel="stylesheet" href="/image_gallery/static/src/lib/photoswipe.css"/> 
+		<!-- Skin CSS file (styling of UI - buttons, caption, etc.)
+		     In the folder of skin CSS file there are also:
+		     - .png and .svg icons sprite, 
+		     - preloader.gif (for browsers that do not support CSS animations) -->
+		<link rel="stylesheet" href="/image_gallery/static/src/lib/default-skin/default-skin.css"/> 
+
+		<!-- Core JS file -->
+		<script type="text/javascript" src="/image_gallery/static/src/lib/photoswipe.min.js"></script> 
+
+		<!-- UI JS file -->
+		<script type="text/javascript" src="/image_gallery/static/src/lib/photoswipe-ui-default.min.js"></script> 		    
+                
+                <script type="text/javascript" src="/image_gallery/static/src/js/pswp_gallery.js"></script>   
+            </xpath>
+        </template>
+    </data>
+</openerp>
