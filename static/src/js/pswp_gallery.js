@@ -3,9 +3,7 @@ openerp.image_gallery = function(instance) {
         QWeb = instance.web.qweb;
     var tableau = []
     var taille = 0
-    var pswp = null;
-    var listImageProd = []
-    var imageIndexZero = "";
+    var pswp = null;   
     
     instance.web.Sidebar = instance.web.Sidebar.extend({
         
@@ -32,38 +30,39 @@ openerp.image_gallery = function(instance) {
            
             var ids = self.getParent().get_selected_ids();
             if (ids.length) {            
-                var id_first = Math.min.apply(Math,ids);
-                
-                Products2 = new instance.web.Model("product.template");
-                Products2.query(['name','type','image']).filter([['id', '=', id_first]]).all().then(function (pieces) {
-                        _.each(pieces, function(piece){
-                            imageIndexZero = "data:"+piece['type']+";base64," +piece['image'];
-                        });                     
-                });  
                 
                 Products = new instance.web.Model("product.template");
-                Products.query(['name','type','image_medium','id']).filter([['id', 'in', ids]]).order_by('id').all().then(function (results) {
+                Products.query(['name','id']).filter([['id', 'in', ids]]).order_by('id').all().then(function (results) {
 			    _.each(results, function(result){ 			         
-				element = [result['name'],result['type'],result['image_medium'],result['id']];
+				element = [result['name'],result['id']];                                
 				tableau.push(element);
 			    });
 	            taille = tableau.length;
                    
 	            if(taille > 0){	    
-                        list_img = '<ul class="pswp__thumbnail_list">';
-                        for (i=0; i<taille; i++){
-                           
-                           list_img += '<li class="list_item"><img src="data:'+tableau[i][1]+';base64,'+tableau[i][2]+'" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'" img_id="'+tableau[i][3]+'" img_index="'+i+'" list_img_taille="'+taille+'"/></li>';
+                        list_img = '<ul id="u_scroll" class="pswp__thumbnail_list">';
+                        for (i=0; i<taille; i++){    
+                            if(i===0){
+                                list_img += '<li class="list_item"><img class="pswp__thumbnail_select" id="list_'+i+'" src="/web/binary/image?model=product.template&id='+tableau[i][1]+'&field=image_medium" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'"  img_index="'+i+'" list_img_taille="'+taille+'"/></li>';
+                            }
+                            else {
+                                list_img += '<li class="list_item"><img id="list_'+i+'" src="/web/binary/image?model=product.template&id='+tableau[i][1]+'&field=image_medium" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'"  img_index="'+i+'" list_img_taille="'+taille+'"/></li>';
+                            }                           
                         }
 	                list_img += '</ul>';
+                        
+                        if($("#htmlDiv") !==null){
+                            $("#htmlDiv").remove();
+                            $("#btn").remove();
+                        }
 	                var htmlDiv = " ";
                         htmlDiv += " <button id='btn'>Open PhotoSwipe</button>";                        
-                        htmlDiv += "<div class='pswp' tabindex='-1' role='dialog' aria-hidden='true'> ";
+                        htmlDiv += "<div id='htmlDiv' class='pswp' tabindex='-1' role='dialog' aria-hidden='true'> ";
                             htmlDiv += "<div class='pswp__bg'></div> ";
                             
                             htmlDiv += "<div class='pswp__scroll-wrap'> ";
 
-                                htmlDiv += "<div class='pswp__container' style='bottom:160px !important;'> ";
+                                htmlDiv += "<div class='pswp__container' style='bottom:170px !important;'> ";
                                      htmlDiv += "<div class='pswp__item'></div> ";
                                     htmlDiv += "<div class='pswp__item'></div> ";
                                     htmlDiv += "<div class='pswp__item'></div> ";
@@ -98,10 +97,10 @@ openerp.image_gallery = function(instance) {
                                         htmlDiv += "<div class='pswp__share-tooltip'></div>  ";
                                     htmlDiv += "</div> ";
 
-                                    htmlDiv += "<button class='pswp__button pswp__button--arrow--left' title='Previous (arrow left)'> ";
+                                    htmlDiv += "<button id='btn_prev' class='pswp__button pswp__button--arrow--left' title='Previous (arrow left)'> ";
                                     htmlDiv += "</button> ";
 
-                                    htmlDiv += "<button class='pswp__button pswp__button--arrow--right' title='Next (arrow right)'> ";
+                                    htmlDiv += "<button id='btn_next' class='pswp__button pswp__button--arrow--right' title='Next (arrow right)'> ";
                                     htmlDiv += "</button> ";
 
                                     htmlDiv += "<div class='pswp__caption'> ";
@@ -113,18 +112,29 @@ openerp.image_gallery = function(instance) {
                                 htmlDiv += "</div> ";
 
                             htmlDiv += "</div> ";
-                        $('body').append(htmlDiv);                        
-                        pswp = self.openPhotoSwipe(tableau,taille); 
+                        
+                        $('body').append(htmlDiv);       
+                        
+                        pswp = self.openPhotoSwipe(tableau,taille);                         
                         $('#gallery_bottom').html(list_img);
                         $('.list_item').click(function() {                          
-                            var img_index = parseInt($(this).find('img').attr("img_index"),10);  
-                            var img_id = parseInt($(this).find('img').attr("img_id"),10);
-                            
-                            pswp.items[img_index].src = listImageProd[img_index];
-                            pswp.goTo(img_index);   
-                            
+                            var img_index = parseInt($(this).find('img').attr("img_index"),10); 
+                            self.show_image_index(img_index);                             
                         });
-                        $(".pswp__bottom").css({"left":"100px !important;","width":$(window).width()+"px"});                          
+                        $(".pswp__bottom").css({"left":"100px !important;","width":$(window).width()+"px"});    
+                        
+                        $('#btn_prev').click(function() {
+                            var img_index = pswp.getCurrentIndex(); 
+                            self.show_image_index(img_index);
+                            var el = document.querySelector('.pswp__bottom');	
+                            el.scrollLeft =128*img_index;
+                        });
+                        $('#btn_next').click(function() {
+                            var img_index = pswp.getCurrentIndex();
+                            self.show_image_index(img_index);
+                            var el = document.querySelector('.pswp__bottom');	
+                            el.scrollLeft =128*img_index;
+                        });                        
                         
 	            } else {
 	                 instance.web.dialog($("<div />").text(_t("No image found for this document.")), {
@@ -133,25 +143,18 @@ openerp.image_gallery = function(instance) {
 	                });
 	            }
 	    });           
-            self.getProductsImage(ids);
+            
         }
 
             instance.web.unblockUI();
         },
-        openPhotoSwipe : function(tableau,taille) {
-            
+        openPhotoSwipe : function(tableau,taille) {                
                 var pswpElement = document.querySelectorAll('.pswp')[0];
                 // build items array
                 var d_img="";
                 var items = [];
-                for (i=0; i<taille; i++){   
-                    if(i==0){
-                        d_img = imageIndexZero;
-                    }
-                    else {
-                       d_img = "data:"+tableau[i][1]+";base64," +tableau[i][2]; 
-                    }                   
-                    
+                for (i=0; i<taille; i++){ 
+                    d_img ="/web/binary/image?model=product.template&id="+tableau[i][1]+"&field=image";
                     var elt = {
                         src: d_img,
                         w: 1024,
@@ -167,22 +170,15 @@ openerp.image_gallery = function(instance) {
                 };               
                 
                 var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
-                gallery.init();                
+                gallery.init();                  
                 return gallery;
         },
-        getProductsImage : function(ids){      
-            var k = 0;
-            Products = new instance.web.Model("product.template");
-            Products.query(['name','type','image']).filter([['id', 'in', ids]]).order_by('id').all().then(function (pieces) {
-                    _.each(pieces, function(piece){ 			         
-                        element = "data:"+piece['type']+";base64," +piece['image'];
-                        listImageProd.push(element);                                
-                        pswp.items[k].src = element;                        
-                        k++;
-                    }); 
-                    pswp.updateSize(true);
-            });            
-        },
         
+        show_image_index : function(img_index){
+            pswp.goTo(img_index); 
+            $( ".list_item img").removeClass("pswp__thumbnail_select");
+            $( "#list_"+img_index).addClass("pswp__thumbnail_select");            
+        },
+               
     });
 }

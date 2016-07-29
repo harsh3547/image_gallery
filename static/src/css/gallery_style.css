@@ -2,22 +2,34 @@
 	overflow: auto;
 	overflow-y: hidden;
 	white-space: nowrap;
-	height: 134px;
+	height: 154px;
 	position:absolute;
-	bottom : 15px;
+	bottom : 10px;
 }
 .pswp__thumbnail_list {
 	text-align : center;
-	border-top: 2px black  solid;
-	/*background-color: rgb(194,138,179);*/
+	border-top: 2px black  solid;	
 }
 .pswp__thumbnail_list li img{
 	width : 128px;
 	height : 128px;
+	cursor:pointer;
 }
 .pswp__thumbnail_list li{
 	list-style: none;
 	display: inline-block;
 	margin: 5px !important;
 
+}
+
+.pswp__thumbnail_list li img {
+    	border: 3px solid #000;
+}
+.pswp__thumbnail_list li img:hover {
+    	border: 3px solid #fff;
+}
+
+.pswp__thumbnail_select{
+    	border: 3px solid #000 !important;
+		outline: 1px solid #fff !important;
 }
