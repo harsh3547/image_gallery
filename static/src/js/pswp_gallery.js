@@ -136,13 +136,13 @@ openerp.image_gallery = function(instance) {
                             var img_index = pswp.getCurrentIndex(); 
                             self.show_image_index(img_index);
                             var el = document.querySelector('.pswp__bottom');	
-                            el.scrollLeft =128*img_index;
+                            el.scrollLeft =136*img_index;
                         });
                         $('#btn_next').click(function() {
                             var img_index = pswp.getCurrentIndex();
                             self.show_image_index(img_index);
                             var el = document.querySelector('.pswp__bottom');	
-                            el.scrollLeft =128*img_index;
+                            el.scrollLeft =136*img_index;
                         });                           
                         document.addEventListener('keydown', self.scrollImageThumbnails);                       
                         
@@ -215,7 +215,7 @@ openerp.image_gallery = function(instance) {
                     } 
                 }               
                 var el = document.querySelector('.pswp__bottom');	
-                el.scrollLeft =128*cIndex;
+                el.scrollLeft =136*cIndex;
                 $( ".list_item img").removeClass("pswp__thumbnail_select");
                 $( "#list_"+cIndex).addClass("pswp__thumbnail_select");
                 var imgCaption = $("#list_"+cIndex).attr("caption");
