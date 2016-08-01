@@ -30,6 +30,13 @@
 }
 
 .pswp__thumbnail_select{
-    	border: 3px solid #000 !important;
-		outline: 1px solid #fff !important;
+    	outline: 1px solid #fff !important;    	
+  	border: 6px solid #000 !important;
+}
+.sld__caption_image{
+    	position:absolute;
+    	top:5px; 
+    	width:100%; 
+    	text-align: center;
+    	color:white;
 }

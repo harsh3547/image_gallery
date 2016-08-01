@@ -32,21 +32,27 @@ openerp.image_gallery = function(instance) {
             if (ids.length) {            
                 
                 Products = new instance.web.Model("product.template");
-                Products.query(['name','id']).filter([['id', 'in', ids]]).order_by('id').all().then(function (results) {
+                Products.query(['name','id','caption']).filter([['id', 'in', ids]]).order_by('id').all().then(function (results) {
 			    _.each(results, function(result){ 			         
-				element = [result['name'],result['id']];                                
+				element = [result['name'],result['id'],result['caption']];                                
 				tableau.push(element);
 			    });
 	            taille = tableau.length;
                    
 	            if(taille > 0){	    
+                        var img0caption ="";
                         list_img = '<ul id="u_scroll" class="pswp__thumbnail_list">';
                         for (i=0; i<taille; i++){    
                             if(i===0){
-                                list_img += '<li class="list_item"><img class="pswp__thumbnail_select" id="list_'+i+'" src="/web/binary/image?model=product.template&id='+tableau[i][1]+'&field=image_medium" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'"  img_index="'+i+'" list_img_taille="'+taille+'"/></li>';
+                                list_img += '<li class="list_item"><img class="pswp__thumbnail_select" id="list_'+i+'" src="/web/binary/image?model=product.template&id='+tableau[i][1]+'&field=image_medium" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'"  img_index="'+i+'" caption="'+tableau[i][2]+'"/></li>';
+                                img0caption = tableau[i][2];      
+								
+                                if(img0caption === 'undefined'){                                  
+                                   img0caption = tableau[i][0]; 
+                                }
                             }
                             else {
-                                list_img += '<li class="list_item"><img id="list_'+i+'" src="/web/binary/image?model=product.template&id='+tableau[i][1]+'&field=image_medium" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'"  img_index="'+i+'" list_img_taille="'+taille+'"/></li>';
+                                list_img += '<li class="list_item"><img id="list_'+i+'" src="/web/binary/image?model=product.template&id='+tableau[i][1]+'&field=image_medium" alt="'+tableau[i][0]+'" title="'+tableau[i][0]+'"  img_index="'+i+'" caption="'+tableau[i][2]+'"/></li>';
                             }                           
                         }
 	                list_img += '</ul>';
@@ -77,7 +83,9 @@ openerp.image_gallery = function(instance) {
                                     htmlDiv += "<div class='pswp__top-bar'> ";                                        
 
                                         htmlDiv += "<div class='pswp__counter'></div> ";
-
+                                        
+                                        htmlDiv += "<div class='sld__caption_image'><h5> "+img0caption+" </h5></div>";
+                                        
                                         htmlDiv += "<button class='pswp__button pswp__button--close' title='Close (Esc)'></button> ";
 
                                         htmlDiv += "<button class='pswp__button pswp__button--fs' title='Toggle fullscreen'></button> ";
@@ -115,7 +123,8 @@ openerp.image_gallery = function(instance) {
                         
                         $('body').append(htmlDiv);       
                         
-                        pswp = self.openPhotoSwipe(tableau,taille);                         
+                        pswp = self.openPhotoSwipe(tableau,taille); 
+                        
                         $('#gallery_bottom').html(list_img);
                         $('.list_item').click(function() {                          
                             var img_index = parseInt($(this).find('img').attr("img_index"),10); 
@@ -134,7 +143,8 @@ openerp.image_gallery = function(instance) {
                             self.show_image_index(img_index);
                             var el = document.querySelector('.pswp__bottom');	
                             el.scrollLeft =128*img_index;
-                        });                        
+                        });                           
+                        document.addEventListener('keydown', self.scrollImageThumbnails);                       
                         
 	            } else {
 	                 instance.web.dialog($("<div />").text(_t("No image found for this document.")), {
@@ -166,7 +176,8 @@ openerp.image_gallery = function(instance) {
                 var options = {
                     // history & focus options are disabled on CodePen
                     history: false,
-                    focus: false,                    
+                    focus: false, 
+                    timeToIdle: false,
                 };               
                 
                 var gallery = new PhotoSwipe( pswpElement, PhotoSwipeUI_Default, items, options);
@@ -174,11 +185,47 @@ openerp.image_gallery = function(instance) {
                 return gallery;
         },
         
-        show_image_index : function(img_index){
+        show_image_index : function(img_index){            
             pswp.goTo(img_index); 
             $( ".list_item img").removeClass("pswp__thumbnail_select");
-            $( "#list_"+img_index).addClass("pswp__thumbnail_select");            
+            $( "#list_"+img_index).addClass("pswp__thumbnail_select");    
+            var imgCaption = $("#list_"+img_index).attr("caption");
+            if(imgCaption === 'undefined'){
+                var imgCaption = $("#list_"+img_index).attr("title");
+            }
+            $('.sld__caption_image').html("<h5>"+imgCaption+"</h5>"); 
         },
-               
+        
+        scrollImageThumbnails : function(event){           
+            var key = event.which || event.keyCode           
+            if(key===39 || key===37){
+                var img_index = pswp.getCurrentIndex(); 
+                var nbItems = pswp.options.getNumItemsFn();
+                var cIndex = 0;
+                if(key===37){
+                    cIndex = img_index - 1;
+                    if(cIndex<0){
+                        cIndex = nbItems - 1;
+                    }
+                }
+                else {
+                   cIndex = img_index + 1;
+                    if(cIndex>=nbItems){
+                        cIndex = 0;
+                    } 
+                }               
+                var el = document.querySelector('.pswp__bottom');	
+                el.scrollLeft =128*cIndex;
+                $( ".list_item img").removeClass("pswp__thumbnail_select");
+                $( "#list_"+cIndex).addClass("pswp__thumbnail_select");
+                var imgCaption = $("#list_"+cIndex).attr("caption");
+                if(imgCaption === 'false'){
+                    var imgCaption = $("#list_"+cIndex).attr("title");
+                }
+                $('.sld__caption_image').html("<h5>"+imgCaption+"</h5>");
+                }
+        },
+          
     });
+    
 }
