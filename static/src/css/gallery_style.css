@@ -35,8 +35,9 @@
 }
 .sld__caption_image{
     	position:absolute;
+    	left:60px;
     	top:5px; 
-    	width:100%; 
+    	width:85%; 
     	text-align: center;
     	color:white;
 }
