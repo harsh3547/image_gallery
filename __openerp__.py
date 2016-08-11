@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': "image_gallery",
+    'sequence':1,
 
     'summary': """
         In product templates of odoo there's an image_medium field(functional field) and an image field. So the image in image field is to be 		displayed in the gallery.
