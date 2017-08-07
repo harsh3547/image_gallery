@@ -3,12 +3,12 @@
     'name': "image_gallery",
     'sequence':1,
 
-    'summary': """
-        In product templates of odoo there's an image_medium field(functional field) and an image field. So the image in image field is to be 		displayed in the gallery.
-	The gallery will open when the user chooses records in the tree view and clicks on more --> open gallery. """,
+    'summary': """ """,
 
     'description': """
         Long description of module's purpose
+        In product templates of odoo there's an image_medium field(functional field) and an image field. 
+        So the image in image field is to be displayed in the gallery. The gallery will open when the user chooses records in the tree view and clicks on more --> open gallery.
     """,
 
     'author': "RDJ INGENO-CONSULTING",
